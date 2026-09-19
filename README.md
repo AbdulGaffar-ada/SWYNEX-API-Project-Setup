@@ -149,3 +149,99 @@ The `.env` file is excluded from Git using `.gitignore`.
 ## Author
 
 Abdul Gaffar
+
+
+## Task 2 - Database and CRUD
+
+This task extends the FastAPI project by connecting the API to a MySQL database and implementing persistent CRUD operations for a Student resource.
+
+### Technologies Added
+
+- MySQL
+- SQLAlchemy
+- PyMySQL
+- Pydantic validation
+
+### Database
+
+Database name:
+
+    api_project_db
+
+The application uses environment variables for database configuration.
+
+Example:
+
+    DB_USER=root
+    DB_PASSWORD=your_mysql_password
+    DB_HOST=localhost
+    DB_PORT=3306
+    DB_NAME=api_project_db
+
+> Do not commit the `.env` file because it contains database credentials.
+
+### Student CRUD API
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /students | Create a student |
+| GET | /students | Get all students |
+| GET | /students/{id} | Get one student |
+| PUT | /students/{id} | Update a student |
+| DELETE | /students/{id} | Delete a student |
+
+### Sample Create Request
+
+    POST /students
+
+Request body:
+
+    {
+        "name": "Abdul Gaffar",
+        "email": "abdul@example.com",
+        "course": "Python"
+    }
+
+### Sample Update Request
+
+    PUT /students/1
+
+Request body:
+
+    {
+        "name": "Abdul Gaffar Updated",
+        "email": "abdul.updated@example.com",
+        "course": "FastAPI"
+    }
+
+### Validation and Error Handling
+
+The API includes:
+
+- Name and course length validation
+- Email format validation
+- Duplicate email handling
+- Student not found handling
+- HTTP 400, 404, and 422 responses
+
+### Run the Project
+
+Activate the virtual environment:
+
+    venv\Scripts\activate
+
+Install dependencies:
+
+    python -m pip install -r requirements.txt
+
+Start the server:
+
+    python -m uvicorn app.main:app --reload
+
+Open Swagger documentation:
+
+    http://127.0.0.1:8000/docs
+
+### Task 2 Learning Outcome
+
+Through this task, I learned how to connect FastAPI with MySQL, use SQLAlchemy ORM, implement persistent CRUD operations, validate API requests, handle database errors, and test APIs using Swagger UI.
