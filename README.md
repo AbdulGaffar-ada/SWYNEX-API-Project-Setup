@@ -245,3 +245,31 @@ Open Swagger documentation:
 ### Task 2 Learning Outcome
 
 Through this task, I learned how to connect FastAPI with MySQL, use SQLAlchemy ORM, implement persistent CRUD operations, validate API requests, handle database errors, and test APIs using Swagger UI.
+
+### Task 3 authentication,validation,error handling
+## Authentication
+
+This API uses API Key authentication to protect student CRUD endpoints.
+
+The API key is stored securely in the `.env` file.
+
+### API Key Header
+
+Protected endpoints require the following header:
+
+X-API-Key: YOUR_API_KEY
+
+### Protected Endpoints
+
+- POST `/students`
+- GET `/students`
+- GET `/students/{student_id}`
+- PUT `/students/{student_id}`
+- DELETE `/students/{student_id}`
+
+### Testing with Swagger
+
+1. Start the FastAPI server:
+
+```bash
+python -m uvicorn app.main:app --reload
