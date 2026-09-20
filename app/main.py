@@ -1,4 +1,5 @@
-from fastapi import FastAPI,Depends,HTTPException
+from fastapi import FastAPI,Depends,HTTPException,Security
+from fastapi.security import APIKeyHeader
 import os
 from dotenv import load_dotenv
 from .database import engine, Base
@@ -10,6 +11,34 @@ from .schemas import StudentCreate,StudentUpdate
 from sqlalchemy.exc import IntegrityError
 
 load_dotenv()
+
+API_KEY=os.getenv("API_KEY")
+api_key_header=APIKeyHeader(name="X-API-Key",auto_error=False)
+def verify_api_key(api_key:str=Security(api_key_header)):
+    if not api_key:
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "success":False,
+                "error":"API key is required"
+            }
+        )
+    if api_key!=API_KEY:
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "success":False,
+                "error":"Invalid API key"
+            }
+        )
+    return api_key
+
+def error_response(message):
+    return {
+        "success":False,
+        "error":message
+    }
+
 app_name=os.getenv("APP_NAME","API Project")
 environment=os.getenv("ENVIRONMENT","development")
 app=FastAPI(
@@ -17,7 +46,9 @@ app=FastAPI(
     description="Backend API for Internship Task1",
     version="1.0.0"
 )
+
 Base.metadata.create_all(bind=engine)
+
 @app.get("/")
 def home():
     return {
@@ -26,12 +57,14 @@ def home():
         "environment":environment
 
     }
+
 @app.get("/health")
 def health_check():
     return {
         "status":"healthy",
         "environment":environment
     }
+
 @app.get("/db-test")
 def database_test():
     try:
@@ -39,8 +72,9 @@ def database_test():
             return {"database":"connected"}
     except Exception as e:
         return {"database":"connection failed","error":str(e)}
+
 @app.post("/students")
-def create_student(student:StudentCreate,db:Session=Depends(get_db)):
+def create_student(student:StudentCreate,db:Session=Depends(get_db),api_key:str=Depends(verify_api_key)):
     new_student=Student(
         name=student.name,
         email=student.email,
@@ -54,27 +88,29 @@ def create_student(student:StudentCreate,db:Session=Depends(get_db)):
         return new_student
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400,detail="Email already exists")
+        raise HTTPException(status_code=400,detail=error_response("Email already exists"))
+
 @app.get("/students")
-def get_students(db:Session=Depends(get_db)):
-    students=db.query(Student).all()
-    return students
+def get_students(db:Session=Depends(get_db),api_key:str=Depends(verify_api_key)):
+    return db.query(Student).all()
+
 @app.get("/students/{student_id}")
-def get_student(student_id:int,db:Session=Depends(get_db)):
+def get_student(student_id:int,db:Session=Depends(get_db),api_key:str=Depends(verify_api_key)):
     student=db.query(Student).filter(Student.id==student_id).first()
     if student is None:
         raise HTTPException(
             status_code=404,
-            detail="student not found"
+            detail=error_response("Student not found")
         )
     return student
+
 @app.put("/students/{student_id}")
-def update_student(student:StudentUpdate,student_id:int,db:Session=Depends(get_db)):
+def update_student(student:StudentUpdate,student_id:int,db:Session=Depends(get_db),api_key:str=Depends(verify_api_key)):
     existing_student=db.query(Student).filter(Student.id==student_id).first()
     if existing_student is None:
         raise HTTPException(
             status_code=404,
-            detail="student not found"
+            detail=error_response("Student not found")
         )
     existing_student.name=student.name
     existing_student.email=student.email
@@ -82,11 +118,12 @@ def update_student(student:StudentUpdate,student_id:int,db:Session=Depends(get_d
     db.commit()
     db.refresh(existing_student)
     return existing_student
+
 @app.delete("/students/{student_id}")
-def delete_student(student_id:int,db:Session=Depends(get_db)):
+def delete_student(student_id:int,db:Session=Depends(get_db),api_key:str=Depends(verify_api_key)):
     student=db.query(Student).filter(Student.id==student_id).first()
     if student is None:
-        raise HTTPException(status_code=404,detail="Student not found")
+        raise HTTPException(status_code=404,detail=error_response("Student not found"))
     db.delete(student)
     db.commit()
     return {
