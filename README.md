@@ -268,8 +268,51 @@ X-API-Key: YOUR_API_KEY
 - DELETE `/students/{student_id}`
 
 ### Testing with Swagger
-
 1. Start the FastAPI server:
 
 ```bash
 python -m uvicorn app.main:app --reload
+
+```
+Open Swagger UI in your browser:
+http://127.0.0.1:8000/docs
+Use the Swagger UI to test the API endpoints.
+
+## Task 4 - Deployable Backend Service
+
+### Project Overview
+
+This project is a Student Management REST API built using Python and FastAPI.
+
+The API provides student CRUD operations with MySQL database integration, API key authentication, request validation, error handling, and Swagger API documentation.
+
+### Technologies Used
+
+* Python 3.7
+* FastAPI
+* Pydantic
+* SQLAlchemy
+* MySQL
+* PyMySQL
+* Uvicorn
+* python-dotenv
+* Swagger UI
+* Git and GitHub
+
+### Project Structure
+
+```text
+api_project/
+├── app/
+│   ├── main.py
+│   ├── database.py
+│   ├── models.py
+│   └── schemas.py
+├── sample_data/
+│   └── students.json
+├── .python-version
+├── .env
+├── .gitignore
+├── requirements.txt
+└── README.md
+```

@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Rahul Kumar",
+        "email": "rahul@example.com",
+        "course": "Python"
+    },
+    {
+        "name": "Priya Sharma",
+        "email": "priya@example.com",
+        "course": "Django"
+    },
+    {
+        "name": "Arjun Reddy",
+        "email": "arjun@example.com",
+        "course": "FastAPI"
+    }
+]
